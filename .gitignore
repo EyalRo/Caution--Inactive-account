@@ -23,3 +23,6 @@ var/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+
+# Dev Sqlite Data
+database.db

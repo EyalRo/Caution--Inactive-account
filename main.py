@@ -18,7 +18,6 @@ app.include_router(users.router)
 app.include_router(contacts.router)
 app.include_router(admin.router)
 
-
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
