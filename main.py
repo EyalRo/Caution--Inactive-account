@@ -11,6 +11,16 @@ from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 app = FastAPI()  # (dependencies=[Depends(get_query_token)])
 
 app.add_middleware(
@@ -30,21 +40,17 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/login")
-async def login():
-    return {"token": "xxx...token"}
+@app.post("/login/", response_model=schemas.User)
+def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email_and_password(
+        db, email=user.email, password=user.password
+    )
+    if db_user == None:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return crud.create_user(db=db, user=user)
 
 
 ## STUFF
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.post("/users/", response_model=schemas.User)

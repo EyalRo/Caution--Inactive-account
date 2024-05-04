@@ -11,6 +11,16 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
+def get_user_by_email_and_password(db: Session, email: str, password: str):
+    hashed_password = password
+    return (
+        db.query(models.User)
+        .filter(models.User.email == email)
+        .filter(models.User.hashed_password == hashed_password)
+        .one_or_none()
+    )
+
+
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
