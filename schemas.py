@@ -20,17 +20,22 @@ class Item(ItemBase):
 
 
 class UserBase(BaseModel):
-    email: str
+    unique_id: str
 
 
 class UserCreate(UserBase):
+    email_address: str
     password: str
 
 
 class User(UserBase):
     id: int
+    email_address: str
+    first_name: str
+    last_name: str
+    phone_number: str
     is_active: bool
-    items: list[Item] = []
+    notification_for_accounts: list[str] = []
 
     class Config:
         # orm_mode = True

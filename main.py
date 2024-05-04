@@ -43,7 +43,7 @@ async def root():
 @app.post("/login/", response_model=schemas.User)
 def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email_and_password(
-        db, email=user.email, password=user.password
+        db, email=user.email_address, password=user.password
     )
     if db_user == None:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -55,7 +55,7 @@ def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
+    db_user = crud.get_user_by_email(db, email=user.email_address)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)

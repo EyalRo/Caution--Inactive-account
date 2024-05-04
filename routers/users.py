@@ -1,14 +1,27 @@
 from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel
-from sqlmodel import Field, SQLModel, create_engine
+from sqlmodel import Field, SQLModel, Session, create_engine
 from typing import Optional
 
+from ..database import SessionLocal
+
+from .. import crud, models, schemas
+
 from ..dependencies import get_query_token, get_token_header
+
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -26,6 +39,7 @@ class User(BaseModel):
 engine = create_engine("sqlite:///database.db")
 
 
-@router.get("/")
-async def read_users():
-    return [{"username": "Rick"}, {"username": "Morty"}]
+@router.get("/", response_model=list[schemas.User])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = crud.get_users(db, skip=skip, limit=limit)
+    return users
