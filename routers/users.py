@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
-
+from fastapi import APIRouter, Depends, HTTPException, Path
+from pydantic import BaseModel
+from sqlmodel import Field, SQLModel, create_engine
 from typing import Optional
-
-from sqlmodel import Field, Session, SQLModel, create_engine, select
 
 from ..dependencies import get_query_token, get_token_header
 
@@ -14,15 +13,14 @@ router = APIRouter(
 )
 
 
-class User(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class User(BaseModel):
     unique_id: str
     first_name: str
     last_name: str
     email_address: str
     password: str
     phone_number: Optional[str] = None
-    notify_list: list = Field(default=[])
+    notify_list: list = []
 
 
 engine = create_engine("sqlite:///database.db")
