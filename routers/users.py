@@ -13,8 +13,10 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 class User(SQLModel, table=True):
-    id: str = Field(primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
+    unique_id: str
     first_name: str
     last_name: str
     email_address: str
@@ -22,7 +24,9 @@ class User(SQLModel, table=True):
     phone_number: Optional[str] = None
     notify_list: list = Field(default=[])
 
+
 engine = create_engine("sqlite:///database.db")
+
 
 @router.get("/")
 async def read_users():

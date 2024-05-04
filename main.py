@@ -5,7 +5,7 @@ from .dependencies import get_query_token, get_token_header
 from .internal import admin
 from .routers import users, contacts
 
-app = FastAPI() # (dependencies=[Depends(get_query_token)])
+app = FastAPI()  # (dependencies=[Depends(get_query_token)])
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,6 +18,12 @@ app.include_router(users.router)
 app.include_router(contacts.router)
 app.include_router(admin.router)
 
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+@app.post("/login")
+async def login():
+    return {"token": "xxx...token"}
