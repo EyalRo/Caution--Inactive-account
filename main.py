@@ -21,7 +21,27 @@ def get_db():
         db.close()
 
 
-app = FastAPI()  # (dependencies=[Depends(get_query_token)])
+tags_metadata = [
+    {
+        "name": "auth",
+        "description": "generate and validate auth tokens.",
+    },
+    {
+        "name": "users",
+        "description": "Operations with the service users. *(require auth token)*",
+    },
+    {
+        "name": "contacts",
+        "description": "Operations with contacts. *(require auth token)*",
+    },
+    {
+        "name": "admin",
+        "description": "Restricted operations limited to admins only. *(require auth token)*",
+    },
+]
+
+app = FastAPI(openapi_tags=tags_metadata)  # (dependencies=[Depends(get_query_token)])
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,17 +50,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(users.router)
-app.include_router(contacts.router)
-app.include_router(admin.router)
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.post("/login/", response_model=schemas.User)
+@app.post("/login/", response_model=schemas.User, tags=["auth"])
 def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email_and_password(
         db, email=user.email_address, password=user.password
@@ -50,9 +62,19 @@ def login(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 
+app.include_router(users.router)
+app.include_router(contacts.router)
+app.include_router(admin.router)
+
+
+@app.get("/", tags=["temp"])
+async def root():
+    return {"message": "Hello World"}
+
+
 ## STUFF
 
-
+"""
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email_address)
@@ -86,3 +108,4 @@ def create_item_for_user(
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
+"""
