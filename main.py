@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from .dependencies import get_query_token, get_token_header
 from .internal import admin
@@ -21,8 +22,13 @@ app.add_middleware(
 
 @app.post("/login/", tags=["auth"])
 def login(user: schemas.UserLogin):
-    token = crud.get_user_by_email_and_password(user.email_address, user.password)
-    return token
+    try:
+        token = crud.get_user_by_email_and_password(user.email_address, user.password)
+    except:
+        err = HTTPException(status_code=404, detail="Not Found")
+        return(err)
+    finally:
+        return JSONResponse(content=token)
 
 
 app.include_router(users.router)
