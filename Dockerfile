@@ -5,4 +5,4 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN pip3 install --user -r requirements.txt
 
-CMD "/root/.local/bin/fastapi run main.py"
+ENTRYPOINT ["/root/.local/bin/fastapi", "run", "main.py"]
