@@ -1,16 +1,23 @@
 from pydantic import BaseModel
 
+
+class Token(BaseModel):
+    token: str
+
+
 # Schemas for Users
+
 
 # Common for all user interactions
 class UserBase(BaseModel):
-    id: str
     email_address: str
     password: str
+
 
 # Nothing extra needed for Login
 class UserLogin(UserBase):
     pass
+
 
 # All single user data
 class User(UserBase):

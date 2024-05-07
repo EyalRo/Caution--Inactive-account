@@ -20,10 +20,21 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_user_by_email_and_password(email: str, password: str):
-    hashed_password = get_password_hash(password)
-    mango = {"selector": {"email_address": email, "password_hash": hashed_password}}
-    db.find(mango)
-    return ()
+    hashed_password = "$2b$12$HMo9jtg1.pwGrtVmtDLqt.59Q.Q/T9kzC791Hs1sp9qMslWuGaLTG" #get_password_hash(password)
+    
+
+    mango = {
+        "selector": {"email_address": email, "password_hash": hashed_password},
+        "limit": 1,
+    }
+    print(db.query(mango))
+    """
+       for user in db.query(mango):
+        print(user)
+        return (user)
+    """
+
+    return None
 
 
 def get_password_hash(password):

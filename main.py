@@ -19,8 +19,9 @@ app.add_middleware(
 )
 
 
-@app.post("/login/", response_model=schemas.User, tags=["auth"])
+@app.post("/login/", tags=["auth"])
 def login(user: schemas.UserLogin):
+    print(crud.get_user_by_email_and_password(user.email_address, user.password))
     token = "som>eToken"
     return token
 
