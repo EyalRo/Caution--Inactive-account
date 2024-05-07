@@ -1,4 +1,5 @@
 FROM python:slim
+EXPOSE 8000
 
 RUN mkdir -p /usr/src/app
 COPY . /usr/src/app
