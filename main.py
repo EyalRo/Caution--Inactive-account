@@ -6,9 +6,6 @@ from .internal import admin
 from .routers import users, contacts
 
 from . import crud, models, schemas
-from .database import SessionLocal, engine
-
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()  # (dependencies=[Depends(get_query_token)])
 
@@ -23,9 +20,9 @@ app.add_middleware(
 
 
 @app.post("/login/", response_model=schemas.User, tags=["auth"])
-def login(user: schemas.UserCreate):
-
-    return ()
+def login(user: schemas.UserLogin):
+    token = "som>eToken"
+    return token
 
 
 app.include_router(users.router)
