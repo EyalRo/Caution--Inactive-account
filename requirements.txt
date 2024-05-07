@@ -1,2 +1,4 @@
 fastapi
 couchdb
+python-jose[cryptography]
+passlib
