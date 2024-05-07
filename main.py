@@ -5,7 +5,7 @@ from .dependencies import get_query_token, get_token_header
 from .internal import admin
 from .routers import users, contacts
 
-from . import crud, models, schemas
+from .data import crud, schemas
 
 app = FastAPI()  # (dependencies=[Depends(get_query_token)])
 
