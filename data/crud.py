@@ -1,39 +1,33 @@
-import couchdb, os
+import couchdb, os, hashlib
 from . import schemas
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DB_STRING = os.getenv("DB_STRING")
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 if DB_STRING:
     couch = couchdb.Server(DB_STRING)
     db = couch["inactive-account"]
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 def get_user_by_email_and_password(email: str, password: str):
-    hashed_password = "$2b$12$HMo9jtg1.pwGrtVmtDLqt.59Q.Q/T9kzC791Hs1sp9qMslWuGaLTG" #get_password_hash(password)
-    
+    hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
+    print(hashed_password)
 
     mango = {
-        "selector": {"email_address": email, "password_hash": hashed_password},
+        "selector": {
+            "email_address": email,
+            "password_hash": hashed_password,
+        },
         "limit": 1,
     }
-    print(db.query(mango))
-    """
-       for user in db.query(mango):
-        print(user)
-        return (user)
-    """
 
+    for user in db.find(mango):
+        return user
     return None
 
 
