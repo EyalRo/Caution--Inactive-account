@@ -14,11 +14,15 @@ from .routers import users, contacts
 from .data import crud, schemas
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 
-app = FastAPI()  # (dependencies=[Depends(get_query_token)])
+app = FastAPI(
+    title="Caution! ⚠️ Inactive Accounts.",
+    description="API backend for ther service. Implemented in Python using FastAPI, Pydantic, jose, and other good stuff ❤️",
+    summary="Backend for Inactive Accounts service.",
+    version="0.0.1 pre-alpha",
+)  # (dependencies=[Depends(get_query_token)])
 
 
 app.add_middleware(
@@ -33,15 +37,14 @@ app.add_middleware(
 @app.post("/login/", tags=["auth"])
 def login(user: schemas.UserLogin):
     try:
-        userdata = crud.get_user_by_email_and_password(user.email_address, user.password)
+        userdata = crud.get_user_by_email_and_password(
+            user.email_address, user.password
+        )
     except:
         err = HTTPException(status_code=404, detail="Not Found")
         return err
     finally:
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
-        data={"sub": userdata}, expires_delta=access_token_expires
-    )
+        access_token = create_access_token(data={"sub": userdata})
         return JSONResponse(content=access_token)
 
 
@@ -52,10 +55,7 @@ app.include_router(admin.router)
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     if SECRET_KEY != None:
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
