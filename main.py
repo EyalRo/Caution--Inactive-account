@@ -15,6 +15,7 @@ from .data import crud, schemas
 
 ALGORITHM = "HS256"
 SECRET_KEY = os.getenv("SECRET_KEY")
+ISSUER = os.getenv("ISSUER")
 
 
 app = FastAPI(
@@ -41,10 +42,20 @@ def login(user: schemas.UserLogin):
             user.email_address, user.password
         )
     except:
-        err = HTTPException(status_code=404, detail="Not Found")
+        err = HTTPException(status_code=500, detail="Server Error")
         return err
     finally:
-        access_token = create_access_token(data={"sub": userdata})
+        if userdata == None:
+            raise HTTPException(status_code=401, detail="No such user")
+        access_token = create_access_token(
+            data={
+                "iss": ISSUER,
+                "nbf": datetime.now(),
+                "iat": datetime.now(),
+                "exp": datetime.now() + timedelta(minutes=60),
+                "data": userdata,
+            }
+        )
         return JSONResponse(content=access_token)
 
 
@@ -57,8 +68,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    if SECRET_KEY != None:
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    else:
+    if SECRET_KEY is None:
         raise HTTPException(status_code=500, detail="!!! No Secret Key !!!")
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
