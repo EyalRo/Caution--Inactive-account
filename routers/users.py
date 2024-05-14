@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from typing import Annotated, Optional
 from jose import JWTError, jwt
 
-
 from ..data import crud, schemas
 
 ALGORITHM = "HS256"
@@ -19,16 +18,6 @@ router = APIRouter(
 )
 
 
-class User(BaseModel):
-    unique_id: str
-    first_name: str
-    last_name: str
-    email_address: str
-    password: str
-    phone_number: Optional[str] = None
-    notify_list: list = []
-
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -36,6 +25,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 def validateToken(token: Annotated[str, Depends(oauth2_scheme)]):
 
     if SECRET_KEY is None:
-        raise HTTPException(status_code=500, detail="No Secret Key")
-    decoded = jwt.decode(token, SECRET_KEY, issuer=ISSUER)
-    return decoded["data"]
+        raise HTTPException(status_code=500, detail="!!! No Secret Key !!!")
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, issuer=ISSUER)
+    except:
+        return "JWT Error"
+    finally:
+        return decoded["data"]

@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -15,12 +16,13 @@ class UserBase(BaseModel):
 
 
 # Nothing extra needed for Login
-class UserLogin(UserBase):
+class UserLoginData(UserBase):
     pass
 
 
 # All single user data
-class User(UserBase):
+class User(UserLoginData):
+    unique_id: str
     first_name: str
     last_name: str
-    phone_number: str
+    phone_number: Optional[str] = None
