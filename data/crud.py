@@ -24,3 +24,11 @@ def get_user_by_email_and_password(email: str, password: str):
     for user in db.find(mango):
         return user
     return None
+
+
+def get_user_by_id(id: str):
+    mango = {"selector": {"_id": id}}
+
+    for user in db.find(mango):
+        return user
+    return None
