@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 
 from ..data import crud, schemas
 
-from ..dependencies import get_query_token, get_token_header
+from ..dependencies import get_token_header
 
 ALGORITHM = "HS256"
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -17,6 +17,7 @@ router = APIRouter(
     prefix="/users",
     tags=["users"],
     responses={404: {"description": "Not found"}},
+    dependencies=[Depends(get_token_header)],
 )
 
 

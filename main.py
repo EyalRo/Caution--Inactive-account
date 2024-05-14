@@ -1,13 +1,12 @@
 from datetime import datetime, timedelta, timezone
 import os
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from jose import JWTError, jwt
+from jose import jwt
 
-from .dependencies import get_query_token, get_token_header
 from .internal import admin
 from .routers import users, contacts
 
@@ -23,8 +22,7 @@ app = FastAPI(
     description="API backend for ther service. Implemented in Python using FastAPI, Pydantic, jose, and other good stuff ❤️",
     summary="Backend for Inactive Accounts service.",
     version="0.0.1 pre-alpha",
-)  # (dependencies=[Depends(get_query_token)])
-
+)
 
 app.add_middleware(
     CORSMiddleware,
