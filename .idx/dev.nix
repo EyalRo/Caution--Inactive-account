@@ -11,6 +11,10 @@
     # pkgs.python311Packages.pip
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
+    pkgs.python311Packages.python
+    pkgs.python311Packages.fastapi
+    pkgs.python311Packages.python-jose
+    
   ];
 
   # Sets environment variables in the workspace
