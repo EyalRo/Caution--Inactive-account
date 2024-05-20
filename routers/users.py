@@ -26,9 +26,35 @@ def get_user_data(token: Annotated[str, Depends(oauth2_scheme)]):
     if SECRET_KEY is None:
         raise HTTPException(status_code=500, detail="!!! No Secret Key !!!")
     try:
-        user_id = jwt.decode(token, SECRET_KEY, issuer=ISSUER)["id"]
-    except:
-        return "JWT Error"
-    finally:
-        userdata = crud.get_user_by_id(user_id)
-        return userdata
+        payload = jwt.decode(token, SECRET_KEY, issuer=ISSUER)
+        user_id = payload["id"]
+        
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    userdata = crud.get_user_by_id(user_id)
+    if userdata is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return userdata
+
+
+@router.put("/{user_id}")
+async def update_user(
+    request: Request,
+    user_id: str,
+    user: schemas.UserUpdate,
+    token: Annotated[str, Depends(oauth2_scheme)],
+):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id_from_token = payload.get("id")
+        if user_id_from_token != user_id:
+            raise HTTPException(status_code=403, detail="Not authorized to update this user")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    updated_user = crud.update_user(user_id, user)
+    if updated_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return updated_user
