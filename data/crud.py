@@ -1,5 +1,8 @@
 import couchdb, os, hashlib
 from dotenv import load_dotenv
+from fastapi import HTTPException
+
+from data import schemas
 
 load_dotenv()
 
@@ -11,14 +14,29 @@ if DB_STRING:
     db = couch["inactive-account"]
 
 
+####################
+# Users - Retrieve
+####################
+
+
+async def get_user_by_email(email: str):
+    mango = {
+        "selector": {"type": "user", "email_address": email},
+    }
+
+    for user in db.find(mango):
+        return user
+    return None
+
+
 def get_user_by_email_and_password(email: str, password: str):
     hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
     mango = {
         "selector": {
+            "type": "user",
             "email_address": email,
             "password_hash": hashed_password,
         },
-        "limit": 1,
     }
 
     for user in db.find(mango):
@@ -33,12 +51,10 @@ def get_user_by_id(id: str):
         return user
     return None
 
-async def create_user(user: User):
+
+def create_user(email: str, password: str):
     """
     Create a new user.
-
-    Args:
-        user: The user data to create.
 
     Returns:
         The created user.
@@ -48,18 +64,22 @@ async def create_user(user: User):
     """
     try:
         # Check if the user already exists
-        existing_user = await get_user_by_email(user.email)
+        existing_user = get_user_by_email(email)
         if existing_user:
             raise HTTPException(status_code=409, detail="User already exists")
 
         # Create the new user
-        new_user = await db.insert_one(user.dict())
+        hashed_password = hashlib.sha256(password.encode("utf-8")).hexdigest()
+        user_data = dict(email_address=email, hashed_password=hashed_password)
+        new_user = db.save(user_data)
 
         return new_user
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Server Error")
-async def update_user(user_id: str, user: User):
+
+
+async def update_user(user_id: str, user: schemas.User):
     """
     Update an existing user.
 
@@ -75,15 +95,15 @@ async def update_user(user_id: str, user: User):
     """
     try:
         # Check if the user exists
-        existing_user = await get_user_by_id(user_id)
+        existing_user = get_user_by_id(user_id)
         if not existing_user:
             raise HTTPException(status_code=404, detail="User not found")
 
         # Update the user document
-        await db.update_one({"_id": user_id}, {"$set": user.dict()})
+        db[user_id] = user
 
         # Fetch the updated user
-        updated_user = await get_user_by_id(user_id)
+        updated_user = get_user_by_id(user_id)
 
         return updated_user
 

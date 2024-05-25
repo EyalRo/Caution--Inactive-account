@@ -19,7 +19,7 @@ class Token(BaseModel):
 # Common for all user interactions
 class UserBase(BaseModel):
     email_address: str
-    password: str
+    hashed_password: str
 
 
 # Nothing extra needed for Login
