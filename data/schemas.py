@@ -19,16 +19,16 @@ class Token(BaseModel):
 # Common for all user interactions
 class UserBase(BaseModel):
     email_address: str
-    hashed_password: str
 
 
-# Nothing extra needed for Login
+# Password needed for Login
 class UserLoginData(UserBase):
-    pass
+    password: str
 
 
 # All single user data
 class User(UserLoginData):
+    hashed_password: str
     type: Literal["user"]
     first_name: str
     last_name: str

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import os
 from typing import Annotated
 
@@ -62,6 +62,19 @@ def get_token(user: schemas.UserLoginData):
             }
         )
         return JSONResponse(content=access_token)
+
+
+@app.post("/signup/", tags=["auth"])
+def sign_up(user: schemas.UserLoginData):
+    try:
+        userdata = crud.create_user(user.email_address, user.password)
+    except:
+        err = HTTPException(status_code=500, detail="Server Error")
+        return err
+    finally:
+        if userdata is None:
+            raise HTTPException(status_code=500, detail="Server Error")
+        return JSONResponse(content=user)
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
