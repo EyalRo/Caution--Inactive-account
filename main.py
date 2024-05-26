@@ -13,7 +13,7 @@ from jose import jwt
 from .internal import admin
 from .routers import users, contacts
 
-from .data import crud, schemas
+from .db import crud, schemas
 
 load_dotenv()
 

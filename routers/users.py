@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
 from jose import JWTError, jwt
 
-from ..data import crud, schemas
+from ..db import crud, schemas
 
 ALGORITHM = "HS256"
 SECRET_KEY = os.getenv("SECRET_KEY")
