@@ -50,7 +50,11 @@ def get_token(user: schemas.UserLoginData):
     finally:
         if userdata is None:
             raise HTTPException(status_code=401, detail="No such user")
-        token_data = {"id": userdata["_id"], "isAdmin": userdata["admin"]}
+        token_data = {
+            "id": userdata["_id"],
+            "isAdmin": userdata["admin"],
+            "email_address": userdata["email_address"],
+        }
         print(token_data)
         access_token = create_access_token(
             data={
