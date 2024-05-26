@@ -2,7 +2,7 @@ import couchdb, os, hashlib
 from dotenv import load_dotenv
 from fastapi import HTTPException
 
-from db import schemas
+from ..db import schemas
 
 load_dotenv()
 
