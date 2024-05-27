@@ -1,7 +1,7 @@
 FROM python:slim
 EXPOSE 8000
 
-ARG DEBIAN_FRONTEND=noninteractive
+#ARG DEBIAN_FRONTEND=noninteractive
 
 ### Install git ###
 RUN apt update
@@ -13,14 +13,15 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 ### Run pip for python reqs
-RUN pip install --quiet -r requirements.txt
+RUN pip3 install --quiet --user -r requirements.txt
 
 ### 🐟 Fish shell! 🐟 
-SHELL ["fish", "--command"]
+#SHELL ["fish", "--command"]
 
-RUN chsh -s /usr/bin/fish
+#RUN chsh -s /usr/bin/fish
 
-ENV SHELL /usr/bin/fish
-ENV LANG=C.UTF-8 LANGUAGE=C.UTF-8 LC_ALL=C.UTF-8
+#ENV SHELL /usr/bin/fish
+#ENV LANG=C.UTF-8 LANGUAGE=C.UTF-8 LC_ALL=C.UTF-8
 
-ENTRYPOINT [ "fish" ]
+#ENTRYPOINT [ "fish" ]
+ENTRYPOINT ["/root/.local/bin/fastapi", "dev", "main.py"]
