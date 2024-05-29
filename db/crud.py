@@ -13,7 +13,6 @@ if DB_STRING:
     couch = couchdb.Server(DB_STRING)
     db = couch["inactive-account"]
 
-
 ####################
 # Users - Retrieve
 ####################
@@ -79,7 +78,7 @@ def create_user(email: str, password: str):
         raise HTTPException(status_code=500, detail="Server Error")
 
 
-async def update_user(user_id: str, user: schemas.User):
+def update_user(user_id: str, updatedData: schemas.UpdateUser):
     """
     Update an existing user.
 
@@ -100,12 +99,15 @@ async def update_user(user_id: str, user: schemas.User):
             raise HTTPException(status_code=404, detail="User not found")
 
         # Update the user document
-        db[user_id] = user
-
+        newUser = dict(updatedData).update(existing_user)
+        print(newUser)
+        doc_id, doc_rev = db.save((existing_user))
         # Fetch the updated user
-        updated_user = get_user_by_id(user_id)
+        # updated_user = get_user_by_id(user_id)
 
-        return updated_user
+        doc = db[doc_id]
+
+        return doc
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Server Error")

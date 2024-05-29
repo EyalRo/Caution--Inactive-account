@@ -26,16 +26,11 @@ class UserLoginData(UserBase):
     password: str
 
 
-# All single user data
-class User(UserLoginData):
-    hashed_password: str
-    type: Literal["user"]
+# Updatable user data
+class UpdateUser(UserBase):
     first_name: str
     last_name: str
     phone_number: Optional[str] = None
-    allow_email: bool = True
-    allow_phone: bool = True
-    is_admin: bool = False
 
 
 ##################################

@@ -4,9 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-from ..db import crud
-from ..db.schemas import User
-
+from ..db import crud, schemas
 
 ALGORITHM = "HS256"
 SECRET_KEY = os.getenv("SECRET_KEY")

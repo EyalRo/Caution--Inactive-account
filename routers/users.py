@@ -40,8 +40,7 @@ def get_user_data(token: Annotated[str, Depends(oauth2_scheme)]):
 
 @router.put("/")
 async def update_user(
-    user_id: str,
-    user: schemas.User,
+    updatedData: schemas.UpdateUser,
     token: Annotated[str, Depends(oauth2_scheme)],
 ):
     if SECRET_KEY is None:
@@ -53,7 +52,7 @@ async def update_user(
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    updated_user = crud.update_user(user_id, user)
+    updated_user = crud.update_user(user_id, updatedData)
     if updated_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
