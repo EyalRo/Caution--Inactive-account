@@ -8,11 +8,11 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    email_address = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    first_name = Column(String)
-    last_name = Column(String)
-    phone_number = Column(String)
+    first_name = Column(String, default="")
+    last_name = Column(String, default="")
+    phone_number = Column(String, default="")
     allow_email = Column(Boolean, default=True)
     allow_phone = Column(Boolean, default=True)
 
@@ -39,7 +39,7 @@ class Contact(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-    email_address = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     phone_number = Column(String)
     allow_email = Column(Boolean, default=False)
     allow_phone = Column(Boolean, default=False)
