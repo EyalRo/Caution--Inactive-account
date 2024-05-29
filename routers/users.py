@@ -26,7 +26,7 @@ def get_user_data(token: Annotated[str, Depends(oauth2_scheme)]):
     if SECRET_KEY is None:
         raise HTTPException(status_code=500, detail="!!! No Secret Key !!!")
     try:
-        payload = jwt.decode(token, SECRET_KEY, issuer=ISSUER)
+        payload = jwt.decode(token, SECRET_KEY, issuer=ISSUER)["data"]
         user_id = payload["id"]
 
     except JWTError:
@@ -38,9 +38,8 @@ def get_user_data(token: Annotated[str, Depends(oauth2_scheme)]):
     return userdata
 
 
-@router.put("/{user_id}")
+@router.put("/")
 async def update_user(
-    request: Request,
     user_id: str,
     user: schemas.User,
     token: Annotated[str, Depends(oauth2_scheme)],
@@ -48,12 +47,9 @@ async def update_user(
     if SECRET_KEY is None:
         raise HTTPException(status_code=500, detail="!!! No Secret Key !!!")
     try:
-        payload = jwt.decode(token, SECRET_KEY, issuer=ISSUER)
-        user_id_from_token = payload.get("id")
-        if user_id_from_token != user_id:
-            raise HTTPException(
-                status_code=403, detail="Not authorized to update this user"
-            )
+        payload = jwt.decode(token, SECRET_KEY, issuer=ISSUER)["data"]
+        user_id = payload.get("id")
+
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
