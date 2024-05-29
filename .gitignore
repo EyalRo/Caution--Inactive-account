@@ -26,3 +26,4 @@ pip-delete-this-directory.txt
 
 # Secret Env
 .env
+sql_app.db
