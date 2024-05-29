@@ -15,5 +15,7 @@ RUN pip3 install --no-cache-dir --upgrade --quiet --user -r requirements.txt
 
 ### Run Fastapi dev
 ENV PATH="${PATH}:/root/.local/bin/"
-CMD fastapi dev main.py
+
+#CMD fastapi dev main.py
 #ENTRYPOINT ["/bin/bash", "-c", "echo hello"]
+ENTRYPOINT ["/bin/bash"]
